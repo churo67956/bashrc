@@ -1,0 +1,68 @@
+# funcione para personalizar la terminal
+
+#set -e
+
+function bashrc_bashrc_nuevo(){
+    #ruta del fichero
+    fichero="$2";
+    ruta="$1";
+    #origen
+    origen="$ruta/$fichero";
+    #destino
+    destino="$ruta/.bashrc_bashrc_$fichero";
+    bashrc="$ruta/bashrc_bashrc";
+    codigo="EOF
+if [ -f $destino ]; then
+. $destino
+fi
+EOF";
+    if [ -f $destino ]; then
+	echo "El fichero $destino ya existe saliendo...";
+	return 1;
+    fi
+#    if  [ ! -f $origen ]; then
+#	pasos=(
+
+#	);
+ #   fi
+    pasos=(
+	    "echo echo > $origen"
+	    "ln -s -f $origen $destino"	   
+    );
+    count=0
+    while [ "x${pasos[count]}" != "x" ]
+    do
+	  comando="${pasos[count]}";
+	  echo $comando;
+	  $comando;
+	  count=$(( $count + 1 ))
+    done
+ #   return 0
+   # echo ${pasos[0]}
+}
+
+
+export -f bashrc_bashrc_nuevo;
+
+
+function bashrc_bashrc(){
+    #directorio de origen
+    origen_dir="$*";
+    bashes=(
+	"alias"
+#	"funciones"
+#	"env_variables"
+    );
+    count1=0;
+    while [ "x${bashes[count1]}" != "x" ]
+    do
+	  comando1="bashrc_bashrc_nuevo $origen_dir ${bashes[count1]}";
+	  echo $comando1;
+	  $comando1;
+	  count1=$(( $count1 + 1 ))
+	  echo $count1
+    done
+    #return 0    
+}
+
+bashrc_bashrc "$1";

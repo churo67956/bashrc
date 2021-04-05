@@ -1,0 +1,24 @@
+* Bashrc
+Layout para cargar ficheros ~./bashrc_bash* y asi poder replicarlos en diferentes cuentas de mis host.
+El objetivo es configurar mi términal con alias, variables, funciones que me sean más faciles de recordar.
+Los ficheros son : 
+- Definición de alias en fichero ~/.bashrc_bashrc_alias.
+- Definición de variables de entorno ~/.bashrc_bashrc_env_variables.
+- Definición de funciones en ~./bash_bashrc_funciones
+
+** Instalación
+Abrimos el fichero ~./bashrc y cargamos el fichero de instalación que he llamado ./bash_bashrc.
+Es necesario que cargemos el fichero antes de cargar el paquete bash-completion.
+#+BEGIN_SRC shell
+if [ -f ~/.bash_bashrc]; then
+   . ~/.bash_bashrc
+fi
+#+END_SRC
+
+** Script bashrc_bashrc
+Para agregar un nuevo fichero ~./bashrc_bash* se facilita la función bashrc_bash_crear. La función realiza las siguientes acciones :
+- Crear el fichero .bashrc_bash*.
+- Crear un soft link en el directorio $HOME hacía .bashrc_bash*.
+- Cargar en ~/.bashrc el fichero .bashrc_bash*.
+
+
