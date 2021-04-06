@@ -45,12 +45,16 @@ function bashrc_recargar(){
 
 #Crea un fichero de configuracion en la ruta especificada.
 #Parametros :
-#  arg1 , ruta completa del fichero. 
-function bashrc_bash_fichero_crear(){
+# arg1 , ruta real del fichero de configuracion
+# arg2, ruta virtual del fichero de configuracion
+function bashrc_bash_configuracion_crear(){
     #solo se crea si no existe
     if [ ! -f "$1" ]; then
 	echo >> "$1";
+	#creamos el link. Es destino.
+	bashrc_bash_link_crear $1 $2;
 	echo "INFO: Creado fichero de configuracion : $1 .";
+	
     else
 	echo "ERROR: El fichero de configuracion ya existe. ";
 	return 1
@@ -59,8 +63,8 @@ function bashrc_bash_fichero_crear(){
 
 #Crea el soft link
 #Parametros :
-# arg1 , ruta completa del fichero de configuracion
-# arg2 , ruta completa del link que apunta al fichero de configuracion
+# arg1 , ruta real del fichero de configuracion
+# arg2 , ruta virtual del fichero de configuracion
 function bashrc_bash_link_crear(){
     if [ -f $1 ]; then
 	ln -s -f $1 $2
@@ -72,50 +76,57 @@ function bashrc_bash_link_crear(){
 }
 #Cargamos las sentencias en ~./bashrc_bashrc para cargar el fichero de configuracion
 #Parametros:
-# arg1 , ruta completa del link que apunta al fichero de configuracion
+# arg1 , ruta virtual del fichero de configuracion
+# arg2 , ruta virtual del fichero cargador
+# arg3 , ruta real del fichero cargador, puede que sea necesario crearlo
 function bashrc_bash_cargar(){
-    if [ ! -f $bashrc_bash_user ]; then
-	#creamos el fichero ~/.bashrc_bashrc
-	
-	bashrc_bash_fichero_crear $bashrc_bash_user
-	echo "INFO: Creado fichero $bashrc_bash_user .";
+    #comprobamos que existe el fichero cargador
+    if [ ! -f $3 ]; then
+	#creamos el fichero cargador y el link tambien
+	bashrc_bash_configuracion_crear $3 $2 
+	echo "INFO: Creado fichero $2 .";
     fi
+    #nos aseguramos que existe la configuracion
     if [ ! -f "$1" ]; then
-	echo "ERROR: Imposible cargar la configuracion $1 en $bashrc_bash_user .";
+	echo "ERROR: Imposible cargar la configuracion $1 en $2 .";
 	return 1
     fi
-    cat >> $bashrc_bash_user <<EOF
+    #cargamos en el cargador la configuracion
+    cat >> $2 <<EOF
 if [ ! -f $1 ]; then
  . $1;
 fi
 EOF
-    echo "INFO: Cargada configuracion en $bashrc_bash_user .";
+    echo "INFO: Cargada configuracion en $2 .";
 }
 
 
 
 #Creamos una nueva configuracion para nuestro terminal
 #Parametros :
-# arg1 , directorio del fichero de configuracion
-# arg2 , nombre del fichero de configuracion. Solo el nombre no la ruta completa del fichero.
+# arg1 , nombre de usuario
+# arg2 , directorio del fichero de configuracion puede ser un repo
+# arg3 , nombre del fichero de configuracion. Solo el nombre no la ruta completa del fichero.
 function bashrc_bash_crear(){
-    #ruta de origen
-    origen=$1/$2;
-    #ruta destino, es la del link
-    destino=~/.bashrc_bash_"$2"
-    #creamos el fichero de configuración si no existe. Es origen.
-    bashrc_bash_fichero_crear $origen;
-    #creamos el link. Es destino.
-    bashrc_bash_link_crear $origen $destino;
-    #cargamos la configuracion origen 
-    bashrc_bash_cargar $destino
+    #ruta real del fichero de configuracion
+    o1=$2/$3
+    #ruta virtual del fichero de configuracion
+    d1=/root/.bashrc_bash_$3
+    #ruta real del fichero cargador
+    o2=$2/$1
+    #ruta virtual del fichero cargador
+    d2=/root/.bashrc_bash_$1
+    #creamos el fichero de configuración.
+    bashrc_bash_configuracion_crear $o1 $d1;
+    #cargamos la configuracion 
+    bashrc_bash_cargar d1 d2 o2    
 }
 
 
 #Exportamos las funciones 
 export -f bashrc_bash_link_crear;
 export -f bashrc_bash_cargar;
-export -f bashrc_bash_fichero_crear;
+export -f bashrc_bash_configuracion_crear;
 export -f bashrc_bash_crear;
 export -f bashrc_recargar;
 alias bashrc_bash_ls="ls -l -a ~/ | grep .bashrc_bash_"

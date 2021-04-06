@@ -1,10 +1,16 @@
 set -e
 #Por defecto vamos a crear 3 fichero de configuracion : alias, funciones y env_variables.
 function bashrc_bashrc_instalar(){
-    bashrc_bash_crear $1 "alias"
-    #bashrc_bash_crear $1 "env_variables"
-    #bashrc_bash_crear $1 "funciones"
-    #bashrc_recargar
+    #creamos el fichero de configuracion alias
+    bashrc_bash_crear $1 $2 "alias"
+    #creamos el fichero de configuracion env_variables
+    bashrc_bash_crear $1 $2 "env_variables"
+    #creamos el fichero de configuracion funciones
+    bashrc_bash_crear $1 $2 "funciones"
+    #recargamos la configuracion principal
+    bashrc_recargar
 }
 
-bashrc_bashrc_instalar $1
+#instalar los ficheros de configuracion para un usuario en un escritorio espeficico
+# bashrc_bashrc_instalar root /root/Documentos/Proyectos/bash_root 
+bashrc_bashrc_instalar $1 $2 

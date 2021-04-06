@@ -1,13 +1,79 @@
 * Bashrc
-Layout para cargar ficheros ~./bashrc_bash* y asi poder replicarlos en diferentes cuentas de mis host.
+
+Mi objetivo es mejorar y estandarizar mi forma de agregar modificaciones al terminal.
+Hasta hace poco todas mis configuraciones las declaraba dentro del fichero ~/.bashrc.
+Las configuraciones consisten en variables de entorno, funciones y alias con nombres fáciles de recordar.
+
+** Estandarizacion
+
+Todas nuestras configuraciones van a resider dentro de ficheros. Estos ficheros va a ser cargados por el
+fichero de configuracion de usuario que a su vez será cargado por el fichero de configuración principal.
+Esta carga no se realiza directamente, existe otro fichero de configuración que hace de middleware.
+Nuestras configuraciones se cargan por medio de links hacia los ficheros de configuración.
+
+*** Ficheros de configuracion
+
+**** Fichero de configuracion
+
+Las configuraciones las vamos a declarar en ficheros dentro de algún subdirectorio de $HOME.
+Vamos a crear en el directorio $HOME enlaces hacía los ficheros de configuración. El nombre de los enlaces
+va a seguir el siguiente patrón : .bashrc_bash_*, donde sustituiremos el asterisco por el nombre del fichero.
+ 
+Por defecto vamos a dividir nuestras configuraciones en tres grupos : alias, funciones y variables de entorno.
+Respectivamente los ficheros de configuración que generan son : alias, funciones y env_variables.
+Los nombre de los links hacia los ficheros anteriores son : .bashrc_bash_alias, .bashrc_bash_funciones y .bashrc_env_variables.
+
+**** Fichero de configuracion de usuario
+
+El fichero de configuración de usuario es ~/.bashrc_bash_*, donde * debe ser sustituido por el nombre de usuario.
+Este fichero es creado de forma automatica. Cada vez que se genera una nueva configuración, de manera transparente al usuario,
+se añaden las siguientes líneas de código al fichero de usuario:
+#+BEGIN_SRC shell 
+# cargamos el fichero de configuracion
+if [ -f ~/.bashrc_bash_* ]
+ .  ~/.bashrc_bash_* 
+fi
+#+END_SRC 
+
+No es aconsejable su modificación manual.
+
+**** Fichero de configuracion de carga
+Este fichero de declara una serie de funciones, variables y aliases empleadas durante la instalación.
+A su vez se encarga de cargar el fichero de configuracion de usuario.
+**** Fichero de configuración principal
+El fichero de configuración principal de la terminal es ~/.bashrc. El fichero ~/.bashrc se encarga de cargar el fichero de 
+configuración de carga.
+
+
+
+
+
+
+
+
+Los ficheros de configuracion se pueden almacenar en cualquier subdirectorio de $HOME.
+
+
+a empezar a trabajar en diferentes equipos y con usuarios distintos me gustaria estandarizar
+la forma de agregar estas configuraciones.
+
+ara cargar ficheros ~./bashrc_bash* y asi poder replicarlos en diferentes cuentas de mis host.
 El objetivo es configurar mi términal con alias, variables, funciones que me sean más faciles de recordar.
 Los ficheros son : 
 - Definición de alias en fichero ~/.bashrc_bashrc_alias.
 - Definición de variables de entorno ~/.bashrc_bashrc_env_variables.
 - Definición de funciones en ~./bash_bashrc_funciones
 
+
+El script llamado .bashrc_bashrc. 
+
+
+
+
+
 ** Instalación
-Abrimos el fichero ~./bashrc y cargamos el fichero de instalación que he llamado ./bash_bashrc.
+
+Abrimos el fichero ~./bashrc y cargamos el fichero de carga llamado ./bash_bashrc.
 Es necesario que cargemos el fichero antes de cargar el paquete bash-completion.
 #+BEGIN_SRC shell
 if [ -f ~/.bash_bashrc]; then
