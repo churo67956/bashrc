@@ -36,7 +36,7 @@
 
 #fichero de configuracion principal para bashrc_bashrc
 
-export bashrc_bash_user=/root/.bashrc_bash_root
+export bashrc_bash_user=~/.bashrc_bash_##USERNAME##
 
 #Recargamos la configuracion principal de la terminal de usuario
 function bashrc_recargar(){
@@ -111,11 +111,11 @@ function bashrc_bash_crear(){
     #ruta real del fichero de configuracion
     o1=$2/$3
     #ruta virtual del fichero de configuracion
-    d1=/root/.bashrc_bash_$3
+    d1=~/.bashrc_bash_$3
     #ruta real del fichero cargador
     o2=$2/$1
     #ruta virtual del fichero cargador
-    d2=/root/.bashrc_bash_$1
+    d2=~/.bashrc_bash_$1
     #creamos el fichero de configuración.
     bashrc_bash_configuracion_crear $o1 $d1;
     #cargamos la configuracion 
