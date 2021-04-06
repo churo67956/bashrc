@@ -36,7 +36,7 @@
 
 #fichero de configuracion principal para bashrc_bashrc
 
-export bashrc_bash_user=~/.bashrc_bash_##USERNAME##
+
 
 #Recargamos la configuracion principal de la terminal de usuario
 function bashrc_recargar(){
