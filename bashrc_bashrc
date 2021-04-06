@@ -89,7 +89,7 @@ function bashrc_bash_cargar(){
     fi
     #cargamos en el cargador la configuracion
     cat >> $2 <<EOF
-if [ ! -f $1 ]; then
+if [ -f $1 ]; then
  . $1;
 fi
 EOF
