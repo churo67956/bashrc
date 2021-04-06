@@ -1,0 +1,139 @@
+# Autor: Erik Churo Churo
+# 
+# Automatizacion de la carga de fichero de configuracion
+# para el terminal.
+#
+# Para cargar una nueva configuracion debemos de llamar al metodo
+# bashrc_bash_crear seguido del directorio y del nombre del
+# fichero de configuracion.
+# Ejemplo : 
+#  bashrc_bash_crear /home/erik/Documentos/Proyectos/mibash git_comando
+#
+# Automaticamente se genera :
+# - El fichero de configuracion git_comandos en el directorio /home/erik/Documentos/Proyectos/mibash
+# - Un soft link en el directorio ~/ con el nombre .bashrc_bash_git_comandos que apunta al fichero de configuracion creado en el paso anterior.
+# - Agregamos las sentencias en el fichero especificado por $bashrc_bash_user para cargar el fichero de configuracion.
+# - Recargamos la configuracion principal del terminal, es decir, ~/.bashrc .
+#
+# No debemos manipular el fichero ~/.bashrc_bashrc existe una serie de funciones que nos
+# permiten realizar cada uno de los pasos anteriores si por algun motivo el punto de partida
+# sea alguno de los puntos anteriores. Estas funciones son :
+# - Creamos un nuevo fichero de configuracion
+#   bashrc_bash_fichero_crear /home/erik/Documentos/Proyectos/mibash/lava_master 
+# - Crear un link del fichero de configuracion ya existente en ~/ con el formado .bashrc_bash_*
+#   bashrc_bash_link_crear /home/erik/Documentos/Proyectos/mibash/lava_master ~/bashrc_bash_lava-master
+# - Agrega las sentencias en ~/.bashrc_bashrc para cargar el fichero de configuracion
+#   bashrc_bash_cargar ~/.bashrc_bash_lava
+# - Recargamos la configuracion principal de la terminal
+#   bashrc_recargar 
+#
+# Tras editar el fichero de configuracion es necesario volver a recargar ~/.bashrc para
+# disponer las nuevas funcionalidades en el terminal
+#   bashrc_recargar
+
+
+
+
+#Recargamos la configuracion principal de la terminal de usuario
+function bashrc_recargar(){
+    . ~/.bashrc
+}
+
+#Crea un fichero de configuracion en la ruta especificada.
+#Parametros :
+# arg1 , ruta real del fichero de configuracion
+# arg2, ruta virtual del fichero de configuracion
+function bashrc_bash_configuracion_crear(){
+    #solo se crea si no existe
+    if [ ! -f "$1" ]; then
+	echo >> "$1";
+	#creamos el link. Es destino.
+	bashrc_bash_link_crear $1 $2;
+	echo "INFO: Creado fichero de configuracion : $1 .";
+	
+    else
+	echo "ERROR: El fichero de configuracion ya existe. ";
+	return 1
+    fi	
+}
+
+#Crea el soft link
+#Parametros :
+# arg1 , ruta real del fichero de configuracion
+# arg2 , ruta virtual del fichero de configuracion
+function bashrc_bash_link_crear(){
+    if [ -f $1 ]; then
+	ln -s -f $1 $2
+	echo  "INFO: Creado link $1 A $2."
+    else
+	echo  "ERROR: $1 no es un fichero valido."
+	return 1
+    fi
+}
+#Cargamos las sentencias en ~./bashrc_bashrc para cargar el fichero de configuracion
+#Parametros:
+# arg1 , ruta virtual del fichero de configuracion
+# arg2 , ruta virtual del fichero cargador
+# arg3 , ruta real del fichero cargador, puede que sea necesario crearlo
+function bashrc_bash_cargar(){
+    #comprobamos que existe el fichero cargador
+    if [ ! -f $3 ]; then
+	#creamos el fichero cargador y el link tambien
+	bashrc_bash_configuracion_crear $3 $2 
+	echo "INFO: Creado fichero $2 .";
+    fi
+    #nos aseguramos que existe la configuracion
+    if [ ! -f "$1" ]; then
+	echo "ERROR: Imposible cargar la configuracion $1 en $2 .";
+	return 1
+    fi
+    #cargamos en el cargador la configuracion
+    cat >> $2 <<EOF
+if [ ! -f $1 ]; then
+ . $1;
+fi
+EOF
+    echo "INFO: Cargada configuracion en $2 .";
+}
+
+
+
+#Creamos una nueva configuracion para nuestro terminal
+#Parametros :
+# arg1 , nombre de usuario
+# arg2 , directorio del fichero de configuracion puede ser un repo
+# arg3 , nombre del fichero de configuracion. Solo el nombre no la ruta completa del fichero.
+function bashrc_bash_crear(){
+    #ruta real del fichero de configuracion
+    o1=$2/$3
+    #ruta virtual del fichero de configuracion
+    d1=/root/.bashrc_bash_$3
+    #ruta real del fichero cargador
+    o2=$2/$1
+    #ruta virtual del fichero cargador
+    d2=/root/.bashrc_bash_$1
+    #creamos el fichero de configuración.
+    bashrc_bash_configuracion_crear $o1 $d1;
+    #cargamos la configuracion 
+    bashrc_bash_cargar $d1 $d2 $o2    
+}
+
+
+#Exportamos las funciones 
+export -f bashrc_bash_link_crear;
+export -f bashrc_bash_cargar;
+export -f bashrc_bash_configuracion_crear;
+export -f bashrc_bash_crear;
+export -f bashrc_recargar;
+alias bashrc_bash_ls="ls -l -a ~/ | grep .bashrc_bash_"
+alias bashrc_bash_links_rm="rm ~/.bashrc_bash_*"
+#Cargamos el resto de configuraciones
+
+if [ -f $bashrc_bash_user ]; then
+    . $bashrc_bash_user
+fi
+
+
+
+
+
